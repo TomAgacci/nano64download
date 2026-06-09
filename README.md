@@ -12,6 +12,10 @@ Licensed under MIT License
    C64-like BASIC Machine · Arduino Nano Edition
 ```
 
+github.com/TomAgacci/basicmachinenano64color
+Color Update
+
+
 Nano64 is a self-contained Commodore-64-inspired BASIC computer running on an
 **Arduino Nano** (ATmega328P). It features:
 
