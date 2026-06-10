@@ -1,5 +1,8 @@
 Licensed under MIT License
 
+Please support the software and use this link
+https://amzn.to/4uvatF5
+
 # Nano64 — C64-style BASIC Machine on Arduino Nano
 
 ```
