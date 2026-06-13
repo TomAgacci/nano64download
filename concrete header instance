@@ -1,0 +1,13 @@
+PulseHeader hdr = {
+    .magic   = {'P','U','L','S'},
+    .version = 0x0001,
+    .flags   = 0x0001,
+    .progCount = 1
+};
+
+PulseProgramDesc pi_ref_desc = {
+    .offset  = sizeof(PulseHeader) + sizeof(PulseProgramDesc),
+    .length  = PI_REF_CORE_CODE_SIZE,
+    .entry   = 0,
+    .reserved = 0
+};
