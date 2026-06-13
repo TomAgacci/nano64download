@@ -1,0 +1,20 @@
+// jzvm_opcodes.h
+typedef enum {
+    OP_NOP        = 0x00,
+    OP_PUSH_CONST = 0x01,  // [imm64]
+    OP_PUSH_INT   = 0x02,  // [imm32]
+    OP_PUSH_K     = 0x03,  // loop index k
+    OP_ADD        = 0x10,
+    OP_SUB        = 0x11,
+    OP_MUL        = 0x12,
+    OP_DIV        = 0x13,
+    OP_NEG        = 0x14,
+    OP_POW        = 0x15,
+    OP_DUP        = 0x16,
+    OP_SWAP       = 0x17,
+    OP_FACT       = 0x20,
+    OP_PULSE_SUM_BEGIN = 0x30,
+    OP_PULSE_SUM_NEXT  = 0x31, // [imm32 target_pc, imm32 k_max]
+    OP_PULSE_SUM_END   = 0x32,
+    OP_HALT       = 0xFF
+} JZ_Opcode;
