@@ -1,0 +1,20 @@
+// pi_ref.pulse (binary layout sketch)
+
+struct PulseHeader {
+    char   magic[4];   // "PULS"
+    uint16_t version;  // 0x0001
+    uint16_t flags;    // 0x0001 = math
+    uint32_t progCount;// 1
+};
+
+struct PulseProgramDesc {
+    uint32_t offset;   // byte offset to code
+    uint32_t length;   // code length in bytes
+    uint32_t entry;    // entry PC (usually 0)
+    uint32_t reserved; // 0
+};
+
+// Layout:
+// [PulseHeader]
+// [PulseProgramDesc]
+// [raw bytecode for PI_REF_CORE]
