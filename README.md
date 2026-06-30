@@ -388,3 +388,5 @@ MIT License — free to use, modify, and distribute. Attribution appreciated.
 
 *Nano64 is an original creative project and is not affiliated with or endorsed
 by Commodore, MOS Technology, or any rights holders of the original Commodore 64.*
+
+(c) Maximillian Charles Smith 2026
