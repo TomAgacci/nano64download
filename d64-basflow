@@ -1,0 +1,3 @@
+python d64_to_zcbasic.py disk.d64 program.zcb
+python zc_basic_compiler.py program.zcb  # your existing compiler
+python zc_send.py COM5 program.zcb 115200
