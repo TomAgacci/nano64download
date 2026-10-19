@@ -1,0 +1,145 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Nano64 HTML Simulator</title>
+<style>
+  body { background:#000; color:#0f0; font-family:monospace; }
+  #grid { border:1px solid #0f0; image-rendering:pixelated; }
+</style>
+</head>
+<body>
+<canvas id="grid" width="320" height="200"></canvas>
+
+<script>
+const palette = [
+  "#000000","#ffffff","#880000","#aaffee",
+  "#cc44cc","#00cc55","#0000aa","#eeee77",
+  "#dd8855","#664400","#ff7777","#333333",
+  "#777777","#aaff66","#0088ff","#bbbbbb"
+];
+
+let state = null;
+
+// Example JS mirror of sprite sheet "player" (must match firmware)
+const spriteSheets = {
+  "player": {
+    w: 8,
+    h: 8,
+    frames: 4,
+    data: [
+      // Frame 0 (16 bytes)
+      0x00,0x11,0x11,0x00,
+      0x01,0x11,0x11,0x10,
+      0x01,0x11,0x11,0x10,
+      0x00,0x11,0x11,0x00,
+
+      // Frame 1
+      0x00,0x11,0x11,0x00,
+      0x01,0x11,0x11,0x10,
+      0x01,0x11,0x11,0x10,
+      0x00,0x11,0x11,0x00,
+
+      // Frame 2
+      0x00,0x11,0x11,0x00,
+      0x01,0x11,0x11,0x10,
+      0x01,0x11,0x11,0x10,
+      0x00,0x11,0x11,0x00,
+
+      // Frame 3
+      0x00,0x11,0x11,0x00,
+      0x01,0x11,0x11,0x10,
+      0x01,0x11,0x11,0x10,
+      0x00,0x11,0x11,0x00
+    ]
+  }
+};
+
+function sprite2bppGet(sheet, frame, w, h, x, y) {
+  const idx = y * w + x;
+  const byteIndex = idx >> 2;
+  const shift = (3 - (idx & 3)) * 2;
+  const base = frame * (w*h/4);
+  const byte = sheet.data[base + byteIndex];
+  return (byte >> shift) & 0x03;
+}
+
+function renderSprites(ctx, sprites, vic, cellW, cellH) {
+  const list = Object.keys(sprites).map(k => ({ id:k, ...sprites[k] }));
+  list.sort((a,b) => a.z - b.z);
+
+  for (const s of list) {
+    const sheetMeta = spriteSheets[s.sheet] || spriteSheets["player"];
+    const w = sheetMeta.w;
+    const h = sheetMeta.h;
+    for (let yy=0; yy<h; yy++) {
+      for (let xx=0; xx<w; xx++) {
+        const code = sprite2bppGet(sheetMeta, s.frame, w, h, xx, yy);
+        if (code === 0) continue;
+        const col =
+          (code === 1) ? s.color  :
+          (code === 2) ? s.color1 :
+                         s.color2;
+        const sx = s.x + xx;
+        const sy = s.y + yy;
+        ctx.fillStyle = palette[col % palette.length];
+        ctx.fillRect(sx, sy, cellW, cellH);
+      }
+    }
+  }
+}
+
+function renderFrame() {
+  if (!state) return;
+
+  const canvas = document.getElementById("grid");
+  const ctx = canvas.getContext("2d");
+  const cols = 40, rows = 25;
+  const cellW = canvas.width / cols;
+  const cellH = canvas.height / rows;
+
+  const screen = state.screen;
+  const colors = state.colors;
+  const sprites = state.sprites;
+  const vic = state.vic;
+
+  ctx.fillStyle = palette[vic.background % palette.length];
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  ctx.strokeStyle = palette[vic.border % palette.length];
+  ctx.strokeRect(0,0,canvas.width,canvas.height);
+
+  for (let i=0;i<screen.length;i++) {
+    const x = i % cols;
+    const y = Math.floor(i / cols);
+    const ch = screen[i];
+    const col = colors[i];
+    const px = x*cellW - vic.scrollX;
+    const py = y*cellH - vic.scrollY;
+
+    ctx.fillStyle = palette[col % palette.length];
+
+    if (ch === 160 || ch === 219) {
+      ctx.fillRect(px, py, cellW, cellH);
+    } else {
+      ctx.fillRect(px, py, cellW, cellH);
+    }
+  }
+
+  renderSprites(ctx, sprites, vic, cellW, cellH);
+}
+
+function tick() {
+  renderFrame();
+  requestAnimationFrame(tick);
+}
+
+fetch("program.json")
+  .then(r => r.json())
+  .then(data => {
+    state = data;
+    tick();
+  });
+</script>
+</body>
+</html>
